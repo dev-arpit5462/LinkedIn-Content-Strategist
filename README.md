@@ -1,8 +1,8 @@
-# LinkedIn Content Strategist v2.0
+# LinkedIn Content Strategist
 
-A sophisticated AI-powered LinkedIn content creation application featuring intelligent multi-tool research capabilities. Version 2.0 introduces a **MasterResearchAgent** that intelligently selects the best research tool (web search, news, Wikipedia, YouTube) for each query, delivering richer and more relevant content than ever before.
+A sophisticated AI-powered LinkedIn content creation application featuring intelligent multi-tool research capabilities. Features a **MasterResearchAgent** that intelligently selects the best research tool (web search, news, Wikipedia, YouTube) for each query, delivering richer and more relevant content than ever before.
 
-## 🚀 What's New in v2.0
+## 🚀 Key Features
 
 ### Multi-Tool Intelligent Research
 - **Smart Tool Selection**: AI automatically chooses the best research source
@@ -73,7 +73,7 @@ A sophisticated AI-powered LinkedIn content creation application featuring intel
 - Python 3.8 or higher
 - Google Gemini API key
 - GNews API key
-- Tavily API key (New in v2.0)
+- Tavily API key
 
 ## 🔧 Installation
 
@@ -123,7 +123,7 @@ A sophisticated AI-powered LinkedIn content creation application featuring intel
 3. Get your API key from the dashboard
 4. Copy the key to your `.env` file
 
-### Tavily API Key (New in v2.0)
+### Tavily API Key
 1. Visit [Tavily.com](https://tavily.com/)
 2. Sign up for an account
 3. Get your API key from the dashboard
@@ -176,7 +176,7 @@ linkedin-content-strategist/
     └── wikipedia_tool.py      # Wikipedia search integration
 ```
 
-## 🔄 v2.0 Workflow
+## 🔄 Workflow
 
 1. **Intelligent Research Phase**
    - MasterResearchAgent analyzes the user's request

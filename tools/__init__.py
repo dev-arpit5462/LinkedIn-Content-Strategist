@@ -1,5 +1,5 @@
 """
-Tools package for LinkedIn Content Strategist v2.0
+Tools package for LinkedIn Content Strategist
 """
 from .gnews_tool import GNewsSearchTool
 from .tavily_tool import TavilySearchTool

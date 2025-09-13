@@ -1,5 +1,5 @@
 """
-Master Research Agent - Intelligent multi-tool research agent for v2.0
+Master Research Agent - Intelligent multi-tool research agent
 """
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate

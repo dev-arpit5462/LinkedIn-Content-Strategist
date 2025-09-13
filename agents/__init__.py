@@ -1,5 +1,5 @@
 """
-Agents package for LinkedIn Content Strategist v2.0
+Agents package for LinkedIn Content Strategist
 """
 from .master_research_agent import MasterResearchAgent
 from .topic_analyst import TopicAnalystAgent

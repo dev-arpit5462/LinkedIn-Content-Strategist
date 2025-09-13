@@ -13,7 +13,7 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(
-    page_title="LinkedIn Content Strategist v2.0",
+    page_title="LinkedIn Content Strategist",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -135,7 +135,7 @@ def main():
     initialize_session_state()
     
     # Header
-    st.markdown('<h1 class="main-header">🚀 LinkedIn Content Strategist v2.0</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🚀 LinkedIn Content Strategist</h1>', unsafe_allow_html=True)
     
     # Load API keys from environment
     google_api_key = os.getenv("GOOGLE_API_KEY")
@@ -146,7 +146,7 @@ def main():
     if not google_api_key or not gnews_api_key or not tavily_api_key:
         st.error("⚠️ API keys not found in environment variables.")
         st.info("""
-        **Setup Required for v2.0:**
+        **Setup Required:**
         1. Create a `.env` file in the project directory
         2. Add your API keys:
            ```
@@ -190,7 +190,7 @@ def main():
                 
                 # Initialize chains
                 try:
-                    add_to_workflow_log("Setup", "Initializing v2.0 multi-tool research system...", "info")
+                    add_to_workflow_log("Setup", "Initializing multi-tool research system...", "info")
                     analysis_chain = AnalysisChain(google_api_key, gnews_api_key, tavily_api_key)
                     
                     # Execute analysis chain with enhanced logging

@@ -1,5 +1,5 @@
 """
-Analysis Chain v2.0 - Orchestrates MasterResearch and TopicAnalyst agents
+Analysis Chain - Orchestrates MasterResearch and TopicAnalyst agents
 """
 from langchain_core.runnables import RunnableLambda
 from agents.master_research_agent import MasterResearchAgent
