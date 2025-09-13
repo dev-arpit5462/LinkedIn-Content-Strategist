@@ -28,7 +28,13 @@ class CreationChain:
     def _generate_angles(self, input_data: dict) -> dict:
         """Generate content angles for the selected topic."""
         topic = input_data["selected_topic"]
-        angles = self.angle_generator.generate_angles(topic)
+        # Handle both string and dict topic formats
+        if isinstance(topic, dict):
+            topic_text = topic.get("full_context", topic.get("title", ""))
+        else:
+            topic_text = topic
+            
+        angles = self.angle_generator.generate_angles(topic_text)
         
         return {
             "selected_topic": topic,
@@ -41,6 +47,12 @@ class CreationChain:
         topic = input_data["selected_topic"]
         selected_angle = input_data["selected_angle"]
         
+        # Handle both string and dict topic formats
+        if isinstance(topic, dict):
+            topic_text = topic.get("full_context", topic.get("title", ""))
+        else:
+            topic_text = topic
+        
         # If no specific angle is selected, use the first generated angle
         if not selected_angle and input_data["angles"]:
             # Extract first angle from the generated angles
@@ -48,7 +60,7 @@ class CreationChain:
             # Simple extraction - in a real implementation, you might want more sophisticated parsing
             selected_angle = "Use the first angle from the generated options"
         
-        draft = self.drafting_agent.draft_post(topic, selected_angle)
+        draft = self.drafting_agent.draft_post(topic_text, selected_angle)
         
         return {
             "selected_topic": topic,
@@ -85,7 +97,7 @@ class CreationChain:
             "final_post": final_post
         }
     
-    def invoke(self, selected_topic: str, selected_angle: str = "") -> dict:
+    def invoke(self, selected_topic, selected_angle: str = "") -> dict:
         """Execute the creation chain."""
         try:
             result = self.chain.invoke({

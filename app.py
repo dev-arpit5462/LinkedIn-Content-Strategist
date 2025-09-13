@@ -13,8 +13,8 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(
-    page_title="LinkedIn Content Strategist",
-    page_icon="📝",
+    page_title="LinkedIn Content Strategist v2.0",
+    page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -98,19 +98,34 @@ def parse_topics_from_analysis(topics_text):
     
     for line in lines:
         line = line.strip()
+        if not line:  # Skip empty lines
+            continue
+            
         if line.startswith('Topic'):
-            if current_topic:
+            # Save previous topic if exists
+            if current_topic and current_topic.get("title"):
                 topics.append(current_topic)
+            
+            # Start new topic
             if ':' in line:
-                current_topic = {"title": line.split(':', 1)[1].strip()}
+                title = line.split(':', 1)[1].strip()
+                current_topic = {"title": title}
             else:
                 current_topic = {"title": line}
+                
         elif line.startswith('Why it matters:'):
-            current_topic["why"] = line.replace('Why it matters:', '').strip()
+            if current_topic:
+                current_topic["why"] = line.replace('Why it matters:', '').strip()
         elif line.startswith('Key angle:'):
-            current_topic["angle"] = line.replace('Key angle:', '').strip()
+            if current_topic:
+                current_topic["angle"] = line.replace('Key angle:', '').strip()
+        elif current_topic and not current_topic.get("why") and not line.startswith('Topic'):
+            # If we have a topic but no "why" yet, this might be a continuation of the title
+            if "title" in current_topic and len(line) > 10:  # Reasonable length check
+                current_topic["why"] = line
     
-    if current_topic:
+    # Don't forget the last topic
+    if current_topic and current_topic.get("title"):
         topics.append(current_topic)
     
     return topics
@@ -120,28 +135,31 @@ def main():
     initialize_session_state()
     
     # Header
-    st.markdown('<h1 class="main-header">🚀 LangChain Content Strategist</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🚀 LinkedIn Content Strategist v2.0</h1>', unsafe_allow_html=True)
     
     # Load API keys from environment
     google_api_key = os.getenv("GOOGLE_API_KEY")
     gnews_api_key = os.getenv("GNEWS_API_KEY")
+    tavily_api_key = os.getenv("TAVILY_API_KEY")
     
     # Validation
-    if not google_api_key or not gnews_api_key:
+    if not google_api_key or not gnews_api_key or not tavily_api_key:
         st.error("⚠️ API keys not found in environment variables.")
         st.info("""
-        **Setup Required:**
+        **Setup Required for v2.0:**
         1. Create a `.env` file in the project directory
         2. Add your API keys:
            ```
            GOOGLE_API_KEY="your_gemini_api_key"
            GNEWS_API_KEY="your_gnews_api_key"
+           TAVILY_API_KEY="your_tavily_api_key"
            ```
         3. Restart the application
         
         **Get API Keys:**
         - **Google Gemini API**: [Google AI Studio](https://makersuite.google.com/app/apikey)
         - **GNews API**: [GNews.io](https://gnews.io/)
+        - **Tavily API**: [Tavily.com](https://tavily.com/)
         """)
         return
     
@@ -172,17 +190,21 @@ def main():
                 
                 # Initialize chains
                 try:
-                    add_to_workflow_log("Setup", "Getting ready...", "info")
-                    analysis_chain = AnalysisChain(google_api_key, gnews_api_key)
+                    add_to_workflow_log("Setup", "Initializing v2.0 multi-tool research system...", "info")
+                    analysis_chain = AnalysisChain(google_api_key, gnews_api_key, tavily_api_key)
                     
-                    # Execute analysis chain
-                    add_to_workflow_log("Research", "Looking for recent news...", "info")
-                    with st.spinner("🔍 Finding relevant topics..."):
+                    # Execute analysis chain with enhanced logging
+                    add_to_workflow_log("MasterResearch", "Analyzing request and selecting best research tool...", "info")
+                    with st.spinner("🔍 Intelligent research in progress..."):
                         result = analysis_chain.invoke(professional_field)
                         st.session_state.analysis_result = result
                     
                     if "Error" not in result.get("topics", ""):
-                        add_to_workflow_log("Analysis", "Found some good topics", "success")
+                        # Enhanced logging with tool selection details
+                        tool_used = result.get("tool_used", "Unknown")
+                        reasoning = result.get("reasoning", "")
+                        add_to_workflow_log("Tool Selection", f"Selected {tool_used} - {reasoning}", "info")
+                        add_to_workflow_log("Analysis", "Identified compelling topics for content creation", "success")
                         st.session_state.show_topic_selection = True
                     else:
                         add_to_workflow_log("Error", f"Failed to analyze topics: {result.get('topics', 'Unknown error')}", "error")
@@ -213,7 +235,13 @@ def main():
                 )
                 
                 selected_topic_data = topics[selected_index]
-                st.session_state.selected_topic = selected_topic_data.get("title", "")
+                # Store the full topic data, not just the title
+                st.session_state.selected_topic = {
+                    "title": selected_topic_data.get("title", ""),
+                    "why": selected_topic_data.get("why", ""),
+                    "angle": selected_topic_data.get("angle", ""),
+                    "full_context": f"Topic: {selected_topic_data.get('title', '')}\nWhy it matters: {selected_topic_data.get('why', '')}\nKey angle: {selected_topic_data.get('angle', '')}"
+                }
                 
                 # Create post button
                 if st.button("✨ Create Post", type="primary"):
@@ -277,8 +305,10 @@ def main():
         
         # Show intermediate results in expanders
         if st.session_state.analysis_result:
-            with st.expander("📊 Analysis Results"):
-                st.text_area("News Data", st.session_state.analysis_result.get("news_data", ""), height=150)
+            with st.expander("📊 Research Results"):
+                tool_used = st.session_state.analysis_result.get("tool_used", "Unknown")
+                st.markdown(f"**Tool Used:** {tool_used}")
+                st.text_area("Research Data", st.session_state.analysis_result.get("research_data", ""), height=150)
                 st.text_area("Identified Topics", st.session_state.analysis_result.get("topics", ""), height=200)
         
         if st.session_state.creation_result:

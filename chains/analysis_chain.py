@@ -1,16 +1,16 @@
 """
-Analysis Chain - Orchestrates NewsResearcher and TopicAnalyst agents
+Analysis Chain v2.0 - Orchestrates MasterResearch and TopicAnalyst agents
 """
 from langchain_core.runnables import RunnableLambda
-from agents.news_researcher import NewsResearcherAgent
+from agents.master_research_agent import MasterResearchAgent
 from agents.topic_analyst import TopicAnalystAgent
 
 
 class AnalysisChain:
-    """Chain that links NewsResearcherAgent and TopicAnalystAgent."""
+    """Chain that links MasterResearchAgent and TopicAnalystAgent."""
     
-    def __init__(self, google_api_key: str, gnews_api_key: str):
-        self.news_researcher = NewsResearcherAgent(google_api_key, gnews_api_key)
+    def __init__(self, google_api_key: str, gnews_api_key: str, tavily_api_key: str):
+        self.master_researcher = MasterResearchAgent(google_api_key, gnews_api_key, tavily_api_key)
         self.topic_analyst = TopicAnalystAgent(google_api_key)
         
         # Create the chain using LCEL
@@ -20,23 +20,27 @@ class AnalysisChain:
         )
     
     def _research_news(self, input_data: dict) -> dict:
-        """Research news for the given professional field."""
+        """Research information for the given professional field."""
         professional_field = input_data["professional_field"]
-        news_data = self.news_researcher.research(professional_field)
+        research_result = self.master_researcher.research(professional_field)
         
         return {
             "professional_field": professional_field,
-            "news_data": news_data
+            "research_data": research_result["research_data"],
+            "tool_used": research_result["tool_used"],
+            "reasoning": research_result["reasoning"]
         }
     
     def _analyze_topics(self, input_data: dict) -> dict:
-        """Analyze news data to identify compelling topics."""
-        news_data = input_data["news_data"]
-        topics = self.topic_analyst.analyze(news_data)
+        """Analyze research data to identify compelling topics."""
+        research_data = input_data["research_data"]
+        topics = self.topic_analyst.analyze(research_data)
         
         return {
             "professional_field": input_data["professional_field"],
-            "news_data": news_data,
+            "research_data": research_data,
+            "tool_used": input_data["tool_used"],
+            "reasoning": input_data["reasoning"],
             "topics": topics
         }
     
@@ -48,6 +52,8 @@ class AnalysisChain:
         except Exception as e:
             return {
                 "professional_field": professional_field,
-                "news_data": f"Error during news research: {str(e)}",
+                "research_data": f"Error during research: {str(e)}",
+                "tool_used": "None",
+                "reasoning": f"Failed to complete research: {str(e)}",
                 "topics": f"Error during topic analysis: {str(e)}"
             }

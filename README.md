@@ -1,34 +1,63 @@
-# LangChain Content Strategist
+# LinkedIn Content Strategist v2.0
 
-A sophisticated AI-powered LinkedIn content creation application that leverages a hierarchical team of AI agents built with LangChain framework. The application uses Google's Gemini 2.0 Flash model and GNews API to research, analyze, and create engaging LinkedIn posts.
+A sophisticated AI-powered LinkedIn content creation application featuring intelligent multi-tool research capabilities. Version 2.0 introduces a **MasterResearchAgent** that intelligently selects the best research tool (web search, news, Wikipedia, YouTube) for each query, delivering richer and more relevant content than ever before.
+
+## 🚀 What's New in v2.0
+
+### Multi-Tool Intelligent Research
+- **Smart Tool Selection**: AI automatically chooses the best research source
+- **4 Research Tools**: Web search, news, Wikipedia, and YouTube integration
+- **Enhanced Content Quality**: Richer, more diverse research data
+- **Transparent Decision Making**: See which tool was selected and why
 
 ## 🏗️ Architecture
 
 ### Hierarchical Agent System
 
 **Level 0: Orchestrator**
-- Main Streamlit application that coordinates the entire workflow
+- Main Streamlit application with enhanced workflow visualization
 
 **Level 1: Chain Controllers**
-- `AnalysisChain`: Links NewsResearcher → TopicAnalyst
+- `AnalysisChain`: Links MasterResearchAgent → TopicAnalyst
 - `CreationChain`: Links AngleGenerator → Drafting → Critique → Formatting
 
 **Level 2: Specialist Agents**
-- **NewsResearcherAgent**: Gathers relevant news using GNews API
-- **TopicAnalystAgent**: Identifies compelling LinkedIn topics from news data
+- **MasterResearchAgent**: Intelligently selects and uses the best research tool
+- **TopicAnalystAgent**: Identifies compelling LinkedIn topics from research data
 - **AngleGeneratorAgent**: Creates 3 distinct content angles (Contrarian, How-To, Future-Looking)
 - **DraftingAgent**: Writes initial LinkedIn post drafts
 - **CritiqueAgent**: Provides adversarial feedback for improvement
 - **FormattingAgent**: Creates final polished posts with hashtags and formatting
 
+### Research Tools
+
+**1. Tavily Web Search** (Primary Tool)
+- Comprehensive web search with AI-generated summaries
+- Best for: General questions, tutorials, lists, expert opinions
+- Advanced search depth with curated results
+
+**2. GNews API**
+- Real-time breaking news and industry developments
+- Best for: Recent events, timely content, industry updates
+
+**3. Wikipedia Integration**
+- Foundational knowledge and definitions
+- Best for: Background context, company information, historical data
+
+**4. YouTube Search**
+- Video content discovery
+- Best for: Tutorials, reviews, expert discussions
+
 ## 🚀 Features
 
-- **Real-time News Research**: Fetches latest industry news using GNews API
+- **Intelligent Tool Selection**: AI automatically chooses the best research source
+- **Multi-Source Research**: Web, news, Wikipedia, and YouTube integration
+- **Enhanced Workflow Visibility**: See tool selection reasoning in real-time
 - **Multi-Agent Content Pipeline**: Hierarchical AI agents for comprehensive content creation
 - **Interactive Topic Selection**: Choose from AI-identified compelling topics
 - **Adversarial Quality Control**: Built-in critique system for content improvement
 - **Professional Formatting**: LinkedIn-optimized posts with hashtags and proper structure
-- **Workflow Transparency**: Real-time logging of agent activities
+- **Transparent Decision Making**: Complete visibility into AI reasoning process
 - **One-Click Publishing**: Copy-to-clipboard functionality
 
 ## 🛠️ Technology Stack
@@ -36,7 +65,7 @@ A sophisticated AI-powered LinkedIn content creation application that leverages 
 - **Frontend**: Streamlit
 - **AI Framework**: LangChain
 - **Language Model**: Google Gemini 2.0 Flash
-- **News Source**: GNews API
+- **Research Sources**: Tavily API, GNews API, Wikipedia, YouTube
 - **Environment Management**: python-dotenv
 
 ## 📋 Prerequisites
@@ -44,6 +73,7 @@ A sophisticated AI-powered LinkedIn content creation application that leverages 
 - Python 3.8 or higher
 - Google Gemini API key
 - GNews API key
+- Tavily API key (New in v2.0)
 
 ## 🔧 Installation
 
@@ -77,6 +107,7 @@ A sophisticated AI-powered LinkedIn content creation application that leverages 
    # Edit .env with your API keys
    GOOGLE_API_KEY="your_gemini_api_key_here"
    GNEWS_API_KEY="your_gnews_api_key_here"
+   TAVILY_API_KEY="your_tavily_api_key_here"
    ```
 
 ## 🔑 API Keys Setup
@@ -92,6 +123,12 @@ A sophisticated AI-powered LinkedIn content creation application that leverages 
 3. Get your API key from the dashboard
 4. Copy the key to your `.env` file
 
+### Tavily API Key (New in v2.0)
+1. Visit [Tavily.com](https://tavily.com/)
+2. Sign up for an account
+3. Get your API key from the dashboard
+4. Copy the key to your `.env` file
+
 ## 🚀 Usage
 
 1. **Start the application**
@@ -99,15 +136,16 @@ A sophisticated AI-powered LinkedIn content creation application that leverages 
    streamlit run app.py
    ```
 
-2. **Configure API Keys**
-   - Enter your Google Gemini API key in the sidebar
-   - Enter your GNews API key in the sidebar
+2. **API Keys**
+   - API keys are automatically loaded from your `.env` file
+   - No manual configuration needed in the UI
 
 3. **Generate Content**
    - Enter your professional field and interests
-   - Click "Research & Generate Ideas"
-   - Select a topic from the generated options
-   - Click "Generate LinkedIn Post"
+   - Click "Find Topics" to start intelligent research
+   - Watch the workflow log to see tool selection reasoning
+   - Select a topic from the AI-identified options
+   - Click "Create Post" to generate your LinkedIn content
    - Copy the final post to clipboard
 
 ## 📁 Project Structure
@@ -120,7 +158,7 @@ linkedin-content-strategist/
 ├── README.md                  # This file
 ├── agents/                    # AI agent implementations
 │   ├── __init__.py
-│   ├── news_researcher.py     # News gathering agent
+│   ├── master_research_agent.py # Intelligent multi-tool research agent
 │   ├── topic_analyst.py       # Topic identification agent
 │   ├── angle_generator.py     # Content angle creation agent
 │   ├── drafting_agent.py      # Post drafting agent
@@ -128,28 +166,34 @@ linkedin-content-strategist/
 │   └── formatting_agent.py    # Final formatting agent
 ├── chains/                    # LangChain orchestration
 │   ├── __init__.py
-│   ├── analysis_chain.py      # News → Topics chain
+│   ├── analysis_chain.py      # Research → Topics chain
 │   └── creation_chain.py      # Angles → Final post chain
 └── tools/                     # Custom LangChain tools
     ├── __init__.py
-    └── gnews_tool.py          # GNews API integration
+    ├── gnews_tool.py          # GNews API integration
+    ├── tavily_tool.py         # Tavily web search integration
+    ├── youtube_tool.py        # YouTube search integration
+    └── wikipedia_tool.py      # Wikipedia search integration
 ```
 
-## 🔄 Workflow
+## 🔄 v2.0 Workflow
 
-1. **Research Phase**
-   - NewsResearcherAgent searches for relevant industry news
-   - TopicAnalystAgent identifies 2-3 compelling topics
+1. **Intelligent Research Phase**
+   - MasterResearchAgent analyzes the user's request
+   - AI selects the optimal tool: Tavily (web), GNews (news), Wikipedia (definitions), or YouTube (videos)
+   - Comprehensive research data gathered from the chosen source
+   - TopicAnalystAgent identifies 2-3 compelling topics from research
 
-2. **Creation Phase**
+2. **Content Creation Phase**
    - AngleGeneratorAgent creates 3 distinct content angles
    - DraftingAgent writes initial post based on selected topic/angle
    - CritiqueAgent provides improvement feedback
    - FormattingAgent creates final polished post
 
-3. **Output**
+3. **Enhanced Output**
    - Professional LinkedIn post with proper formatting
    - Relevant hashtags and strategic emoji usage
+   - Complete workflow transparency showing tool selection reasoning
    - Copy-to-clipboard functionality
 
 ## 🎯 Content Quality Features
